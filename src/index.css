@@ -1,0 +1,123 @@
+:root {
+  --primary-color: #5A9C74;
+  --secondary-color: #f0f4f8;
+  --sidebar-bg: #2c3e50;
+  --sidebar-text: #bdc3c7;
+  --sidebar-text-active: #ffffff;
+  --content-bg: #ecf0f1;
+  --text-color: #34495e;
+  --card-bg: #ffffff;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body {
+  margin: 0;
+  background-color: var(--content-bg);
+  color: var(--text-color);
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.page-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  transition: background-color 0.3s;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar-brand {
+  color: var(--sidebar-text-active);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sidebar .nav-link {
+  color: var(--sidebar-text);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #34495e;
+  color: var(--sidebar-text-active);
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--primary-color);
+  color: var(--sidebar-text-active);
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1.5rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 2rem;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--content-bg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: #4a8a64;
+  border-color: #4a8a64;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(90, 156, 116, 0.25);
+}
