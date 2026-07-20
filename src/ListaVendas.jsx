@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { API_URL } from './apiConfig';
 
 function ListaVendas({ token, refreshKey, onVendaUpdated }) {
   const [vendas, setVendas] = useState([]);
@@ -7,7 +8,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
 
   const handleMarcarComoPago = async (vendaId) => {
     try {
-      const response = await fetch('http://localhost:8000/marcarpago.php', {
+      const response = await fetch(`${API_URL}/marcarpago.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +31,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
     const fetchVendas = async () => {
       setErro('');
       try {
-        const response = await fetch('http://localhost:8000/listavendas.php', {
+        const response = await fetch(`${API_URL}/listavendas.php`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

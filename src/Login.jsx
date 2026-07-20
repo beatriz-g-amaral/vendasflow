@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from './apiConfig'; // Importa a URL da API
 
 function Login({ onLoginSuccess }) {
   const [formData, setFormData] = useState({ usuario: '', senha: '' });
@@ -9,7 +10,7 @@ function Login({ onLoginSuccess }) {
     setMensagem('');
 
     try {
-      const response = await fetch('http://localhost:8000/login.php', {
+      const response = await fetch(`${API_URL}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

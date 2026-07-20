@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import ListaVendas from './ListaVendas';
+import { API_URL } from './apiConfig';
 
 // Função para obter a data formatada como YYYY-MM-DD
 const getFormattedDate = (date) => {
@@ -24,7 +25,7 @@ function Vendas({ token }) {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch('http://localhost:8000/clientes.php', {
+        const response = await fetch(`${API_URL}/clientes.php`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         const data = await response.json();
@@ -74,7 +75,7 @@ function Vendas({ token }) {
     const payload = { ...formData, datas_parcelas: datasParcelas };
 
     try {
-      const response = await fetch('http://localhost:8000/index.php', {
+      const response = await fetch(`${API_URL}/index.php`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

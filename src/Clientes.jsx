@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from './apiConfig';
 
 function Clientes({ token }) {
   const [clientes, setClientes] = useState([]);
@@ -10,7 +11,7 @@ function Clientes({ token }) {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch('http://localhost:8000/clientes.php', {
+        const response = await fetch(`${API_URL}/clientes.php`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         const data = await response.json();
@@ -30,7 +31,7 @@ function Clientes({ token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/clientes.php', {
+      const response = await fetch(`${API_URL}/clientes.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
