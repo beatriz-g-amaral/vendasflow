@@ -18,7 +18,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
       });
       const data = await response.json();
       if (data.sucesso) {
-        onVendaUpdated(); 
+        onVendaUpdated();
       } else {
         setErro(data.mensagem || 'Falha ao marcar como pago.');
       }
@@ -56,15 +56,13 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
     return vendas.filter(venda => {
       const nomeCliente = venda.cliente_nome.toLowerCase();
       const filtroCliente = filtros.cliente.toLowerCase();
-      
-      // Converte a data de DD/MM/YYYY para um objeto Date do JS
+
       const [dia, mes, ano] = venda.data_vencimento.split('/');
       const dataVencimento = new Date(`${ano}-${mes}-${dia}`);
 
       const dataInicio = filtros.dataInicio ? new Date(filtros.dataInicio) : null;
       const dataFim = filtros.dataFim ? new Date(filtros.dataFim) : null;
 
-      // Lógica de filtragem
       const matchCliente = nomeCliente.includes(filtroCliente);
       const matchDataInicio = !dataInicio || dataVencimento >= dataInicio;
       const matchDataFim = !dataFim || dataVencimento <= dataFim;
@@ -83,15 +81,14 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
   }
 
   return (
-    <div className="mt-4 card">
+    <div className="card">
       <div className="card-body">
-        <h4 className="card-title">Vendas Registradas</h4>
-        
-        {/* Filtros */}
+        <h4 className="page-title">Vendas Registradas</h4>
+
         <div className="row mb-3 g-3 align-items-end">
           <div className="col-md-5">
             <label htmlFor="filtro-cliente" className="form-label">Filtrar por Cliente:</label>
-            <input 
+            <input
               type="text"
               id="filtro-cliente"
               name="cliente"
@@ -103,7 +100,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
           </div>
           <div className="col-md-3">
             <label htmlFor="filtro-data-inicio" className="form-label">De:</label>
-            <input 
+            <input
               type="date"
               id="filtro-data-inicio"
               name="dataInicio"
@@ -114,7 +111,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
           </div>
           <div className="col-md-3">
             <label htmlFor="filtro-data-fim" className="form-label">Até:</label>
-            <input 
+            <input
               type="date"
               id="filtro-data-fim"
               name="dataFim"
@@ -126,7 +123,7 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
         </div>
 
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
+          <table className="table table-hover">
             <thead>
               <tr>
                 <th scope="col">Cliente</th>
@@ -144,13 +141,13 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
                     <td>{venda.valor}</td>
                     <td>{venda.data_vencimento}</td>
                     <td>
-                      <span className={`badge ${venda.status_pagamento === 'pago' ? 'bg-success' : 'bg-warning'}`}>
+                      <span className={`badge bg-${venda.status_pagamento === 'pago' ? 'success' : 'warning'}`}>
                         {venda.status_pagamento}
                       </span>
                     </td>
                     <td>
                       {venda.status_pagamento === 'pendente' && (
-                        <button 
+                        <button
                           className="btn btn-sm btn-outline-success"
                           onClick={() => handleMarcarComoPago(venda.id)}
                         >
