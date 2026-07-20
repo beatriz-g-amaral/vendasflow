@@ -12,9 +12,12 @@ function Dashboard({ token }) {
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (!token) return; // Não faz a chamada se o token não estiver disponível
       try {
         const response = await fetch(`${API_URL}/dashboard.php`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { 
+            'Authorization': `Bearer ${token}` // Garante que o token seja enviado
+          }
         });
         const data = await response.json();
         if (data.sucesso) {
@@ -34,7 +37,7 @@ function Dashboard({ token }) {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(value);
+    }).format(value || 0); // Garante que não quebre com valores nulos
   };
 
   if (erro) {
