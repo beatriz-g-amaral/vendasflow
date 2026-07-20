@@ -22,13 +22,13 @@ function App() {
   const renderPagina = () => {
     switch (paginaAtual) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard token={token} />;
       case 'vendas':
         return <Vendas token={token} />;
       case 'clientes':
         return <Clientes token={token} />;
       default:
-        return <Dashboard />;
+        return <Dashboard token={token} />;
     }
   };
 
