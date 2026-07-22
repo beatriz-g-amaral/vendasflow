@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import ListaVendas from './ListaVendas';
-import { API_URL } from './apiConfig';
+import apiService from './apiService';
 
-// Função para obter a data formatada como YYYY-MM-DD
 const getFormattedDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -10,7 +9,7 @@ const getFormattedDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-function Vendas({ token }) {
+function Vendas({ token, empresaId }) {
   const [clientes, setClientes] = useState([]);
   const [formData, setFormData] = useState({ 
     cliente_id: '', 
@@ -25,30 +24,22 @@ function Vendas({ token }) {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch(`${API_URL}/clientes.php`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        const data = await response.json();
-        if (data.sucesso) {
-          setClientes(data.clientes);
-        } else {
-          setMensagem(`Erro ao carregar clientes: ${data.mensagem}`);
-        }
+        const data = await apiService('/clientes.php');
+        setClientes(data.clientes);
       } catch (error) {
-        setMensagem('Erro de conexão ao buscar clientes.');
+        setMensagem(`Erro ao carregar clientes: ${error.message}`);
       }
     };
     fetchClientes();
-  }, [token]);
+  }, [token, empresaId]);
 
-  // Atualiza as datas das parcelas quando o número de parcelas muda
   useEffect(() => {
     const numParcelas = parseInt(formData.numero_parcelas, 10);
     if (numParcelas > 0) {
       const hoje = new Date();
       const novasDatas = Array.from({ length: numParcelas }, (_, i) => {
         const dataVencimento = new Date(hoje);
-        dataVencimento.setDate(hoje.getDate() + (i + 1) * 7); // Padrão de 7 em 7 dias
+        dataVencimento.setDate(hoje.getDate() + (i + 1) * 7);
         return getFormattedDate(dataVencimento);
       });
       setDatasParcelas(novasDatas);
@@ -66,7 +57,6 @@ function Vendas({ token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validação para garantir que todas as datas foram preenchidas
     if (datasParcelas.some(data => !data)) {
       setMensagem('Por favor, preencha todas as datas de vencimento das parcelas.');
       return;
@@ -75,26 +65,15 @@ function Vendas({ token }) {
     const payload = { ...formData, datas_parcelas: datasParcelas };
 
     try {
-      const response = await fetch(`${API_URL}/index.php`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await response.json();
+      const data = await apiService('/index.php', 'POST', payload);
       setMensagem(data.mensagem);
 
-      if (data.sucesso) {
-        setFormData({ cliente_id: '', valor_entrada: '', valor_parcela: '', numero_parcelas: '' });
-        setDatasParcelas([]);
-        setRefreshKey(oldKey => oldKey + 1);
-      }
+      setFormData({ cliente_id: '', valor_entrada: '', valor_parcela: '', numero_parcelas: '' });
+      setDatasParcelas([]);
+      setRefreshKey(oldKey => oldKey + 1);
 
     } catch (error) {
-      setMensagem('Erro ao conectar com a API.');
+      setMensagem(error.message || 'Erro ao conectar com a API.');
     }
   };
 
@@ -194,7 +173,7 @@ function Vendas({ token }) {
         </div>
       </div>
 
-      <ListaVendas token={token} refreshKey={refreshKey} onVendaUpdated={() => setRefreshKey(oldKey => oldKey + 1)} />
+      <ListaVendas token={token} empresaId={empresaId} refreshKey={refreshKey} onVendaUpdated={() => setRefreshKey(oldKey => oldKey + 1)} />
     </>
   );
 }

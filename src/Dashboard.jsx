@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from './apiConfig';
+import apiService from './apiService';
 
 function Dashboard({ token }) {
   const [stats, setStats] = useState({
@@ -12,32 +12,22 @@ function Dashboard({ token }) {
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!token) return; // Não faz a chamada se o token não estiver disponível
+      if (!token) return;
       try {
-        const response = await fetch(`${API_URL}/dashboard.php`, {
-          headers: { 
-            'Authorization': `Bearer ${token}` // Garante que o token seja enviado
-          }
-        });
-        const data = await response.json();
-        if (data.sucesso) {
-          setStats(data.dados);
-        } else {
-          setErro(data.mensagem || 'Falha ao buscar estatísticas.');
-        }
+        const data = await apiService('/dashboard.php');
+        setStats(data.dados);
       } catch (error) {
-        setErro('Erro de conexão ao buscar dados do dashboard.');
+        setErro(error.message || 'Erro de conexão ao buscar dados do dashboard.');
       }
     };
     fetchStats();
   }, [token]);
 
-  // Função para formatar valores como moeda
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(value || 0); // Garante que não quebre com valores nulos
+    }).format(value || 0);
   };
 
   if (erro) {

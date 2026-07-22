@@ -1,29 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
-import { API_URL } from './apiConfig';
+import apiService from './apiService';
 
-function ListaVendas({ token, refreshKey, onVendaUpdated }) {
+function ListaVendas({ token, empresaId, refreshKey, onVendaUpdated }) {
   const [vendas, setVendas] = useState([]);
   const [erro, setErro] = useState('');
   const [filtros, setFiltros] = useState({ cliente: '', dataInicio: '', dataFim: '' });
 
   const handleMarcarComoPago = async (vendaId) => {
     try {
-      const response = await fetch(`${API_URL}/marcarpago.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id: vendaId }),
-      });
-      const data = await response.json();
-      if (data.sucesso) {
-        onVendaUpdated();
-      } else {
-        setErro(data.mensagem || 'Falha ao marcar como pago.');
-      }
+      await apiService('/marcarpago.php', 'POST', { id: vendaId });
+      onVendaUpdated();
     } catch (error) {
-      setErro('Erro de conexão ao marcar como pago.');
+      setErro(error.message || 'Erro de conexão ao marcar como pago.');
     }
   };
 
@@ -31,26 +19,17 @@ function ListaVendas({ token, refreshKey, onVendaUpdated }) {
     const fetchVendas = async () => {
       setErro('');
       try {
-        const response = await fetch(`${API_URL}/listavendas.php`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        if (data.sucesso) {
-          setVendas(data.vendas);
-        } else {
-          setErro(data.mensagem || 'Falha ao buscar vendas.');
-        }
+        const data = await apiService('/listavendas.php');
+        setVendas(data.vendas);
       } catch (error) {
-        setErro('Erro de conexão ao buscar vendas.');
+        setErro(error.message || 'Erro de conexão ao buscar vendas.');
       }
     };
 
     if (token) {
       fetchVendas();
     }
-  }, [token, refreshKey]);
+  }, [token, empresaId, refreshKey]);
 
   const vendasFiltradas = useMemo(() => {
     return vendas.filter(venda => {

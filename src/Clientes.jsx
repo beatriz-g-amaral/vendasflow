@@ -1,58 +1,38 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from './apiConfig';
+import apiService from './apiService';
 
-function Clientes({ token }) {
+function Clientes({ token, empresaId }) {
   const [clientes, setClientes] = useState([]);
   const [formData, setFormData] = useState({ nome: '', telefone: '', endereco: '' });
   const [mensagem, setMensagem] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Efeito para buscar os clientes da API
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch(`${API_URL}/clientes.php`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        const data = await response.json();
-        if (data.sucesso) {
-          setClientes(data.clientes);
-        } else {
-          setMensagem(data.mensagem || 'Falha ao buscar clientes.');
-        }
+        const data = await apiService('/clientes.php');
+        setClientes(data.clientes);
       } catch (error) {
-        setMensagem('Erro de conexão ao buscar clientes.');
+        setMensagem(error.message || 'Falha ao buscar clientes.');
       }
     };
     fetchClientes();
-  }, [token, refreshKey]);
+  }, [token, empresaId, refreshKey]);
 
-  // Função para enviar o formulário de novo cliente
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/clientes.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
+      const data = await apiService('/clientes.php', 'POST', formData);
       setMensagem(data.mensagem);
-      if (data.sucesso) {
-        setFormData({ nome: '', telefone: '', endereco: '' });
-        setRefreshKey(oldKey => oldKey + 1); // Atualiza a lista
-      }
+      setFormData({ nome: '', telefone: '', endereco: '' });
+      setRefreshKey(oldKey => oldKey + 1);
     } catch (error) {
-      setMensagem('Erro ao conectar com a API.');
+      setMensagem(error.message || 'Erro ao conectar com a API.');
     }
   };
 
   return (
     <>
-      {/* Formulário de Cadastro */}
       <div className="card">
         <div className="card-body">
           <h4 className="card-title">Novo Cliente</h4>
@@ -96,7 +76,6 @@ function Clientes({ token }) {
         </div>
       </div>
 
-      {/* Tabela de Listagem */}
       <div className="mt-4 card">
         <div className="card-body">
           <h4 className="card-title">Clientes Cadastrados</h4>

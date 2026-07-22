@@ -1,32 +1,86 @@
 import { useState } from 'react';
-import { API_URL } from './apiConfig'; // Importa a URL da API
+import apiService from './apiService';
 
 function Login({ onLoginSuccess }) {
   const [formData, setFormData] = useState({ usuario: '', senha: '' });
   const [mensagem, setMensagem] = useState('');
+  const [empresas, setEmpresas] = useState([]);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState('');
+  const [etapa, setEtapa] = useState('login');
+  const [tokenTemp, setTokenTemp] = useState(null);
+  const [usuarioInfo, setUsuarioInfo] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensagem('');
 
     try {
-      const response = await fetch(`${API_URL}/login.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const data = await apiService('/login.php', 'POST', formData);
 
-      const data = await response.json();
-
-      if (data.sucesso) {
-        onLoginSuccess(data.token);
+      if (data.empresas && data.empresas.length > 1) {
+        setEmpresas(data.empresas);
+        setTokenTemp(data.token);
+        setUsuarioInfo(data.usuario);
+        setEtapa('selecionar-empresa');
+      } else if (data.empresas && data.empresas.length === 1) {
+        onLoginSuccess(data.token, data.empresas[0].id, data.empresas[0].nome, data.usuario);
       } else {
-        setMensagem(data.mensagem || 'Falha no login.');
+        onLoginSuccess(data.token, null, null, data.usuario);
       }
     } catch (error) {
-      setMensagem('Erro ao conectar com a API de login.');
+      setMensagem(error.message || 'Erro ao conectar com a API de login.');
     }
   };
+
+  const handleSelecionarEmpresa = () => {
+    if (!empresaSelecionada) {
+      setMensagem('Selecione uma empresa para continuar.');
+      return;
+    }
+    const empresa = empresas.find(e => e.id === parseInt(empresaSelecionada));
+    onLoginSuccess(tokenTemp, empresa.id, empresa.nome, usuarioInfo);
+  };
+
+  if (etapa === 'selecionar-empresa') {
+    return (
+      <div className="login-container">
+        <div className="login-card card">
+          <div className="card-body">
+            <h3 className="card-title text-center">VendasFlow</h3>
+            <p className="text-center text-muted mb-4">
+              Olá, <strong>{usuarioInfo?.nome || usuarioInfo?.usuario}</strong>!
+              Selecione a empresa:
+            </p>
+            
+            <div className="mb-3">
+              {empresas.map(emp => (
+                <div 
+                  key={emp.id} 
+                  className={`empresa-option ${empresaSelecionada == emp.id ? 'selected' : ''}`}
+                  onClick={() => setEmpresaSelecionada(emp.id)}
+                >
+                  <div className="empresa-nome">{emp.nome}</div>
+                  {emp.cnpj && <div className="empresa-cnpj">CNPJ: {emp.cnpj}</div>}
+                </div>
+              ))}
+            </div>
+
+            <div className="d-grid mt-4">
+              <button 
+                className="btn btn-primary" 
+                onClick={handleSelecionarEmpresa}
+                disabled={!empresaSelecionada}
+              >
+                Acessar Empresa
+              </button>
+            </div>
+
+            {mensagem && <div className="alert alert-danger mt-3 text-center">{mensagem}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">

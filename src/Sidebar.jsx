@@ -1,7 +1,7 @@
 import React from 'react';
 import { HouseDoorFill, CashStack, PeopleFill } from 'react-bootstrap-icons';
 
-function Sidebar({ paginaAtual, setPaginaAtual, handleLogout }) {
+function Sidebar({ paginaAtual, setPaginaAtual, handleLogout, empresaNome }) {
   const NavLink = ({ pagina, nome, icon }) => (
     <li className="nav-item">
       <a 
@@ -22,6 +22,7 @@ function Sidebar({ paginaAtual, setPaginaAtual, handleLogout }) {
     <div className="sidebar">
       <div className="sidebar-header">
         <a href="#" className="sidebar-brand">VendasFlow</a>
+        {empresaNome && <div className="sidebar-empresa">{empresaNome}</div>}
       </div>
       <ul className="nav nav-pills flex-column">
         <NavLink pagina="dashboard" nome="Dashboard" icon={<HouseDoorFill />} />
