@@ -15,6 +15,18 @@ function ListaVendas({ token, empresaId, refreshKey, onVendaUpdated }) {
     }
   };
 
+  const handleExcluirVenda = async (vendaId) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta venda?')) {
+      return;
+    }
+    try {
+      await apiService('/excluirvenda.php', 'POST', { id: vendaId });
+      onVendaUpdated();
+    } catch (error) {
+      setErro(error.message || 'Erro de conexão ao excluir venda.');
+    }
+  };
+
   useEffect(() => {
     const fetchVendas = async () => {
       setErro('');
@@ -125,14 +137,22 @@ function ListaVendas({ token, empresaId, refreshKey, onVendaUpdated }) {
                       </span>
                     </td>
                     <td>
-                      {venda.status_pagamento === 'pendente' && (
+                      <div className="d-flex gap-2">
+                        {venda.status_pagamento === 'pendente' && (
+                          <button
+                            className="btn btn-sm btn-outline-success"
+                            onClick={() => handleMarcarComoPago(venda.id)}
+                          >
+                            Marcar como Pago
+                          </button>
+                        )}
                         <button
-                          className="btn btn-sm btn-outline-success"
-                          onClick={() => handleMarcarComoPago(venda.id)}
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleExcluirVenda(venda.id)}
                         >
-                          Marcar como Pago
+                          Excluir
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))
