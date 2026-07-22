@@ -4,6 +4,7 @@ import Vendas from './Vendas';
 import Clientes from './Clientes';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
+import Usuarios from './Usuarios';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('authToken'));
@@ -41,6 +42,8 @@ function App() {
         return <Vendas token={token} empresaId={empresaId} />;
       case 'clientes':
         return <Clientes token={token} empresaId={empresaId} />;
+      case 'usuarios':
+        return <Usuarios token={token} empresaId={empresaId} />;
       default:
         return <Dashboard token={token} empresaId={empresaId} />;
     }
