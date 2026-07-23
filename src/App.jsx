@@ -5,6 +5,9 @@ import Clientes from './Clientes';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
 import Usuarios from './Usuarios';
+import Configuracoes from './Configuracoes';
+import Fornecedores from './Fornecedores';
+import Compras from './Compras';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('authToken'));
@@ -44,6 +47,12 @@ function App() {
         return <Clientes token={token} empresaId={empresaId} />;
       case 'usuarios':
         return <Usuarios token={token} empresaId={empresaId} />;
+      case 'configuracoes':
+        return <Configuracoes token={token} empresaId={empresaId} />;
+      case 'fornecedores':
+        return <Fornecedores token={token} empresaId={empresaId} />;
+      case 'compras':
+        return <Compras token={token} empresaId={empresaId} />;
       default:
         return <Dashboard token={token} empresaId={empresaId} />;
     }

@@ -1,16 +1,69 @@
-# React + Vite
+## 📋 Descrição do Projeto — **VendasFlow**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O **VendasFlow** é um sistema web completo de **gestão de vendas** com suporte a **múltiplas empresas**, dividido em duas partes:
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🔧 Backend — `api-vendasflow` (PHP)
 
-## React Compiler
+API REST construída em **PHP puro** com **MySQL**, utilizando:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Autenticação JWT** via `firebase/php-jwt` — tokens Bearer para proteger os endpoints
+- **Variáveis de ambiente** via `vlucas/phpdotenv` — configuração do banco e chave secreta
+- **CORS** habilitado para comunicação com o frontend em React
 
-## Expanding the ESLint configuration
+**Endpoints principais:**
+| Endpoint | Descrição |
+|---|---|
+| login.php | Autenticação do usuário, retorna token JWT + lista de empresas vinculadas |
+| auth.php | Middleware de autenticação — valida token e header `X-Empresa-Id` |
+| empresas.php | CRUD de empresas + vínculo/desvinculo de usuários |
+| clientes.php | CRUD de clientes (filtrados por empresa) |
+| index.php | Criação de vendas parceladas (com ou sem entrada) |
+| listavendas.php | Listagem de vendas com filtro por empresa |
+| dashboard.php | Dados do dashboard financeiro |
+| usuarios.php | Gestão de usuários |
+| criarusuario.php | Criação de novos usuários |
+| excluirvenda.php / marcarpago.php / verificarvencimentos.php | Ações complementares |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Arquitetura multi-empresas:**
+- Tabela `empresas` + tabela `empresa_usuario` (vínculo N:N)
+- Tabelas `vendas` e `clientes` possuem coluna `empresa_id` para isolamento por empresa
+- O middleware auth.php lê o header `X-Empresa-Id` e valida se o usuário tem permissão
+
+---
+
+### 🎨 Frontend — `vendasflow` (React + Vite)
+
+**Single Page Application** construída com **React 19** + **Vite 8**, com as seguintes páginas:
+
+| Página | Componente | Descrição |
+|---|---|---|
+| Login | `Login.jsx` | Autenticação em 2 etapas (credenciais → seleção de empresa) |
+| Dashboard | `Dashboard.jsx` | Visão geral financeira |
+| Vendas | `Vendas.jsx` | Gestão de vendas e parcelas |
+| Clientes | `Clientes.jsx` | CRUD de clientes |
+| Usuários | `Usuarios.jsx` | Gestão de usuários do sistema |
+| Sidebar | `Sidebar.jsx` | Navegação lateral com nome da empresa |
+
+**Fluxo de uso:**
+1. Usuário faz login com credenciais
+2. Recebe token JWT + lista de empresas vinculadas
+3. Se possui **1 empresa** → é selecionada automaticamente
+4. Se possui **várias** → seletor de empresa é exibido
+5. O `empresaId` é armazenado em `localStorage` e enviado como header `X-Empresa-Id` em todas as requisições
+6. O backend filtra todos os dados pela empresa e valida permissões
+
+---
+
+### 🗄️ Banco de Dados (MySQL)
+
+- Tabelas principais: `usuarios`, `empresas`, `empresa_usuario`, `vendas`, `clientes`
+- Relacionamento N:N entre usuários e empresas
+- Isolamento de dados por empresa nas tabelas de vendas e clientes
+
+---
+
+### 💡 Resumo
+
+O **VendasFlow** é um sistema **multi-empresas** para controle de vendas parceladas, ideal para pequenos negócios que precisam gerenciar múltiplas empresas (ou filiais) a partir de uma única plataforma, com autenticação segura via JWT e interface moderna em React.

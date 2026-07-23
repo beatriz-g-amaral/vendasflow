@@ -1,5 +1,5 @@
 import React from 'react';
-import { HouseDoorFill, CashStack, PeopleFill, PersonFill } from 'react-bootstrap-icons';
+import { HouseDoorFill, CashStack, PeopleFill, PersonFill, GearFill, CartFill } from 'react-bootstrap-icons';
 
 function Sidebar({ paginaAtual, setPaginaAtual, handleLogout, empresaNome }) {
   const NavLink = ({ pagina, nome, icon }) => (
@@ -28,7 +28,10 @@ function Sidebar({ paginaAtual, setPaginaAtual, handleLogout, empresaNome }) {
         <NavLink pagina="dashboard" nome="Dashboard" icon={<HouseDoorFill />} />
         <NavLink pagina="vendas" nome="Vendas" icon={<CashStack />} />
         <NavLink pagina="clientes" nome="Clientes" icon={<PeopleFill />} />
+        <NavLink pagina="fornecedores" nome="Fornecedores" />
+        <NavLink pagina="compras" nome="Compras" icon={<CartFill />} />
         <NavLink pagina="usuarios" nome="Usuários" icon={<PersonFill />} />
+        <NavLink pagina="configuracoes" nome="Configurações" icon={<GearFill />} />
       </ul>
       <div className="sidebar-footer">
         <button className="btn btn-danger w-100" onClick={handleLogout}>
